@@ -18,11 +18,16 @@ type HTTPServer struct {
 	Address     string        `yaml:"address" env-default:"localhost:8080"`
 	TimeOut     time.Duration `yaml:"timeout" env-default:"4s"`
 	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60s"`
+	User        string        `yaml:"user" env-required:"true"`
+	Password    string        `yaml:"password" env-required:"true" env:"HTTP_SERVER_PASSWORD"`
 }
 
 func MustLoad() *Config {
-	os.Setenv("CONFIG_PATH", "./config/local.yaml") //ЭТО КОСТЫЛЬ, надо потом это исправить
-	configPath := os.Getenv("CONFIG_PATH")          //Иначе на серваке тоже траблы будут
+	err := os.Setenv("CONFIG_PATH", "./config/local.yaml")
+	if err != nil {
+		return nil
+	} //ЭТО КОСТЫЛЬ, надо потом это исправить
+	configPath := os.Getenv("CONFIG_PATH") //Иначе на серваке тоже траблы будут
 	if configPath == "" {
 		log.Fatal("CONFIG_PATH environment variable not set")
 	}
